@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.equip')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -41,15 +41,19 @@
 
         {{-- Footer: Botones de Acción --}}
         <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-center space-x-4">
+            {{-- Botón Volver (Público) --}}
             <a href="{{ route('partits.index') }}" class="text-gray-600 hover:text-gray-900 font-medium flex items-center px-4 py-2">
                 ← Tornar al llistat
             </a>
             
-            <a href="{{ route('partits.edit', $partit) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded shadow transition">
-                Editar Resultat
-            </a>
+            {{-- Botón Editar (SOLO ADMIN) --}}
+            @if(auth()->user()?->role === 'administrador')
+                <a href="{{ route('partits.edit', $partit) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded shadow transition">
+                    Editar Resultat
+                </a>
+            @endif
         </div>
 
     </div>
 </div>
-@endsection
+@endsection 

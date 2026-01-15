@@ -1,66 +1,74 @@
-@extends('layouts.app')
+@extends('layouts.equip')
 
 @section('content')
-<div class="container">
+<div class="container mx-auto px-4">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-      <h1 class="title">Calendari de Partits</h1>
-      <a href="{{ route('partits.create') }}" class="btn btn--primary">Nou Partit</a>
+      <h1 class="text-3xl font-bold text-black">Calendari de Partits</h1>
+      
+      {{-- SOLO ADMIN: Botón de Crear (Mejorado) --}}
+      @if(auth()->user()?->role === 'administrador')
+          <a href="{{ route('partits.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition">
+              Nou Partit
+          </a>
+      @endif
   </div>
 
   @if (session('success'))
-      <div style="background: #d4edda; color: #155724; padding: 10px; margin-bottom: 20px; border-radius: 4px;">
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
           {{ session('success') }}
       </div>
   @endif
 
-  <div class="grid-cards">
+  {{-- GRID: Aquí está el truco para que se pongan al lado (3 columnas) --}}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @foreach ($partits as $partit)
-      <article class="card" style="text-align: center;">
+      {{-- TARJETA: Borde suave, sombra y esquinas redondeadas --}}
+      <article class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full">
         
-        {{-- Header con la fecha --}}
-        <header class="card__header" style="justify-content: center;">
-            <span class="card__badge" style="background: #666;">
+        <header class="p-3 flex justify-center bg-gray-50 border-b border-gray-100">
+            <span class="bg-gray-600 text-white text-xs font-bold px-3 py-1 rounded-full">
                 {{ $partit->data_partit->format('d/m/Y H:i') }}
             </span>
         </header>
 
-        {{-- Cuerpo: Equipo A vs Equipo B --}}
-        <div class="card__body" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem;">
+        {{-- TU ESTRUCTURA FAVORITA (Intacta) --}}
+        <div class="p-6 flex justify-between items-center flex-grow">
             
-            {{-- Local --}}
+            {{-- Local (40%) --}}
             <div style="text-align: right; width: 40%;">
-                <h3 style="font-weight: bold; color: #2d3748;">{{ $partit->local->nom }}</h3>
-                <span style="font-size: 0.8rem; color: #718096;">Local</span>
+                <h3 class="font-bold text-gray-800 text-lg leading-tight">{{ $partit->local->nom }}</h3>
+                <span class="text-xs text-gray-500 font-bold uppercase">Local</span>
             </div>
 
-            {{-- RESULTADO CLICKABLE (Enlace al SHOW) --}}
+            {{-- Marcador (Botón Central Mejorado) --}}
             <a href="{{ route('partits.show', $partit) }}" 
-               title="Veure detalls del partit"
-               style="text-decoration: none; font-weight: 900; font-size: 1.5rem; color: #2b6cb0; background: #ebf8ff; padding: 5px 15px; border-radius: 10px; transition: transform 0.2s; display: inline-block;"
-               onmouseover="this.style.transform='scale(1.1)'" 
-               onmouseout="this.style.transform='scale(1)'">
+               title="Veure detalls"
+               class="bg-blue-50 text-blue-800 border border-blue-200 font-black text-xl px-2 py-2 rounded-lg hover:bg-blue-100 transition shadow-sm whitespace-nowrap mx-2">
                 {{ $partit->gols_local }} - {{ $partit->gols_visitant }}
             </a>
 
-            {{-- Visitante --}}
+            {{-- Visitant (40%) --}}
             <div style="text-align: left; width: 40%;">
-                <h3 style="font-weight: bold; color: #2d3748;">{{ $partit->visitant->nom }}</h3>
-                <span style="font-size: 0.8rem; color: #718096;">Visitant</span>
+                <h3 class="font-bold text-gray-800 text-lg leading-tight">{{ $partit->visitant->nom }}</h3>
+                <span class="text-xs text-gray-500 font-bold uppercase">Visitant</span>
             </div>
         </div>
 
-        {{-- Footer con EDITAR y ELIMINAR --}}
-        <footer class="card__footer" style="justify-content: center; gap: 10px;">
-          
-          {{-- Botón Editar --}}
-          <a class="btn btn--primary" href="{{ route('partits.edit', $partit) }}">Editar</a>
+        <footer class="bg-gray-50 p-4 border-t border-gray-100 flex justify-center gap-2">
+          {{-- SOLO ADMIN: Botones pulidos --}}
+          @if(auth()->user()?->role === 'administrador')
+              <a class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium shadow-sm transition" href="{{ route('partits.edit', $partit) }}">
+                  Editar
+              </a>
 
-          {{-- Botón Eliminar --}}
-          <form method="POST" action="{{ route('partits.destroy', $partit) }}" class="inline">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn--danger" type="submit" onclick="return confirm('Esborrar partit?')">Eliminar</button>
-          </form>
+              <form method="POST" action="{{ route('partits.destroy', $partit) }}" class="inline">
+                @csrf
+                @method('DELETE')
+                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-medium shadow-sm transition" type="submit" onclick="return confirm('Esborrar partit?')">
+                    Eliminar
+                </button>
+              </form>
+          @endif
         </footer>
       </article>
     @endforeach

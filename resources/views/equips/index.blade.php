@@ -1,59 +1,68 @@
 @extends('layouts.equip')
 
 @section('content')
-<div class="container">
+<div class="container mx-auto px-4">
   
-  {{-- Cabecera con botón de Crear --}}
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-      <h1 class="title">Llistat d'equips</h1>
-      <a href="{{ route('equips.create') }}" class="btn btn--primary">Nou Equip</a>
+  {{-- Cabecera --}}
+  <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-blue-800">Llistat d'equips</h1>
+      
+      {{-- SOLO ADMIN: Botón de Crear --}}
+      @if(auth()->user()?->role === 'administrador')
+          <a href="{{ route('equips.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
+              Nou Equip
+          </a>
+      @endif
   </div>
 
-  {{-- Mensaje de éxito --}}
   @if (session('success'))
-      <div style="background: #d4edda; color: #155724; padding: 10px; margin-bottom: 20px; border-radius: 4px;">
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
           {{ session('success') }}
       </div>
   @endif
 
-  <div class="grid-cards">
+  {{-- GRID AUTOMÁTICO (CSS PURO) --}}
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
     @foreach ($equips as $equip)
-      <article class="card">
+      <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
         
-        {{-- ZONA DE IMAGEN --}}
-        <div style="text-align: center; padding: 15px 0;">
+        {{-- Zona de Imagen (Escudo) --}}
+        <div class="p-4 flex justify-center bg-gray-50 border-b border-gray-100">
             @if($equip->escut)
                 <img src="{{ asset('storage/' . $equip->escut) }}" 
                      alt="Escut de {{ $equip->nom }}" 
-                     style="width: 100px; height: 100px; object-fit: contain; margin: 0 auto;">
+                     class="h-32 w-32 object-contain">
             @else
-                {{-- Placeholder --}}
-                <div style="font-size: 50px;">🛡️</div>
+                <div class="h-32 w-32 flex items-center justify-center text-4xl bg-gray-200 rounded-full border border-gray-300">
+                    🛡️
+                </div>
             @endif
         </div>
 
-        <header class="card__header" style="justify-content: center;">
-          <h2 class="card__title">{{ $equip->nom }}</h2>
+        {{-- Título --}}
+        <header class="p-4 text-center">
+          <h2 class="text-xl font-bold text-gray-800">{{ $equip->nom }}</h2>
         </header>
 
-        <div class="card__body" style="text-align: center;">
-          <p><strong>Títols:</strong> {{ $equip->titols }}</p>
-          <p><strong>Estadi:</strong> {{ $equip->estadi->nom ?? 'Sense estadi' }}</p>
+        {{-- Datos --}}
+        <div class="p-4 text-center flex-grow">
+          <p class="text-gray-700 mb-1"><strong>Títols:</strong> {{ $equip->titols }}</p>
+          <p class="text-gray-700"><strong>Estadi:</strong> {{ $equip->estadi->nom ?? 'Sense estadi' }}</p>
         </div>
 
-        <footer class="card__footer" style="gap: 10px; justify-content: center;">
-          {{-- Botón VEURE (Activado) --}}
-          <a class="btn btn--ghost" href="{{ route('equips.show', $equip) }}">Veure</a>
+        {{-- Botones --}}
+        <footer class="bg-gray-50 px-4 py-3 border-t border-gray-100 flex justify-center space-x-2">
+          {{-- Veure (Público) --}}
+          <a class="text-blue-600 hover:text-blue-800 font-medium px-3 py-1" href="{{ route('equips.show', $equip) }}">Veure</a>
           
-          {{-- Botón EDITAR --}}
-          <a class="btn btn--primary" href="{{ route('equips.edit', $equip) }}">Editar</a>
-
-          {{-- Botón ELIMINAR --}}
-          <form method="POST" action="{{ route('equips.destroy', $equip) }}" class="inline">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn--danger" type="submit" onclick="return confirm('Segur que vols eliminar-lo?')">Eliminar</button>
-          </form>
+          {{-- Admin --}}
+          @if(auth()->user()?->role === 'administrador')
+              <a class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm" href="{{ route('equips.edit', $equip) }}">Editar</a>
+              <form method="POST" action="{{ route('equips.destroy', $equip) }}" class="inline">
+                @csrf @method('DELETE')
+                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm" type="submit" onclick="return confirm('Segur?')">Eliminar</button>
+              </form>
+          @endif
         </footer>
       </article>
     @endforeach

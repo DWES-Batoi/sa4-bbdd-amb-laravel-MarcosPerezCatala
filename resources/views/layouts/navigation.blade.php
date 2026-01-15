@@ -8,6 +8,7 @@
                     </a>
                 </div>
 
+                {{-- MENÚ ESCRITORIO --}}
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('equips.index')" :active="request()->routeIs('equips.*')">
                         {{ __('Equips') }}
@@ -15,6 +16,16 @@
 
                     <x-nav-link :href="route('estadis.index')" :active="request()->routeIs('estadis.*')">
                         {{ __('Estadis') }}
+                    </x-nav-link>
+
+                    {{-- NUEVO: Jugadoras --}}
+                    <x-nav-link :href="route('jugadoras.index')" :active="request()->routeIs('jugadoras.*')">
+                        {{ __('Jugadores') }}
+                    </x-nav-link>
+
+                    {{-- NUEVO: Partits --}}
+                    <x-nav-link :href="route('partits.index')" :active="request()->routeIs('partits.*')">
+                        {{ __('Partits') }}
                     </x-nav-link>
 
                     @auth
@@ -27,12 +38,10 @@
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
-                    {{-- Si está logueado: Dropdown con nombre y Logout --}}
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                                 <div>{{ Auth::user()->name }}</div>
-
                                 <div class="ms-1">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -57,7 +66,6 @@
                         </x-slot>
                     </x-dropdown>
                 @else
-                    {{-- Si NO está logueado: Login y Register --}}
                     <div class="space-x-4">
                         <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900">Log in</a>
                         <a href="{{ route('register') }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900">Register</a>
@@ -76,6 +84,7 @@
         </div>
     </div>
 
+    {{-- MENÚ MÓVIL --}}
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('equips.index')" :active="request()->routeIs('equips.*')">
@@ -83,6 +92,14 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('estadis.index')" :active="request()->routeIs('estadis.*')">
                 {{ __('Estadis') }}
+            </x-responsive-nav-link>
+            
+            {{-- NUEVOS ENLACES MÓVIL --}}
+            <x-responsive-nav-link :href="route('jugadoras.index')" :active="request()->routeIs('jugadoras.*')">
+                {{ __('Jugadores') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('partits.index')" :active="request()->routeIs('partits.*')">
+                {{ __('Partits') }}
             </x-responsive-nav-link>
         </div>
 
