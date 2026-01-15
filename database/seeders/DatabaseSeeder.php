@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             EquipsSeeder::class,
             JugadoraSeeder::class,
             PartitSeeder::class,
+            UserSeeder::class,
         ]);
 
         dump('DatabaseSeeder: TOTES LES DADES CARREGADES');
