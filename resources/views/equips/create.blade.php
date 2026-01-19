@@ -1,55 +1,48 @@
 @extends('layouts.equip')
-@section('title', 'Afegir nou equip')
+@section('title', __('Nou Equip'))
 
 @section('content')
-  <h1 class="text-2xl font-bold mb-4">Afegir nou equip</h1>
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md" style="color: black !important;">
+    <h1 class="text-2xl font-bold text-black mb-6">{{ __('Crear Equip') }}</h1>
 
-  @if ($errors->any())
-    <div class="bg-red-100 text-red-700 p-2 mb-4 rounded">
-      <ul>
-        @foreach ($errors->all() as $error)
-          <li>{{ $error }}</li>
-        @endforeach
-      </ul>
-    </div>
-  @endif
+    <form action="{{ route('equips.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
 
-  {{-- ¡IMPORTANTE! Añadido enctype="multipart/form-data" --}}
-  <form action="{{ route('equips.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-    @csrf
+        <div class="mb-4">
+            <label for="nom" class="block text-black font-bold mb-2">{{ __('Nom') }}:</label>
+            <input type="text" name="nom" id="nom" value="{{ old('nom') }}" required 
+                   class="w-full border-gray-300 rounded-md shadow-sm text-black bg-white focus:border-black focus:ring-black">
+            @error('nom') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+        </div>
 
-    {{-- Campo Nombre --}}
-    <div>
-      <label for="nom" class="block font-bold">Nom:</label>
-      <input type="text" name="nom" id="nom" value="{{ old('nom') }}" class="border p-2 w-full rounded">
-    </div>
+        <div class="mb-4">
+            <label for="titols" class="block text-black font-bold mb-2">{{ __('Títols') }}:</label>
+            <input type="number" name="titols" id="titols" value="{{ old('titols') }}" required 
+                   class="w-full border-gray-300 rounded-md shadow-sm text-black bg-white focus:border-black focus:ring-black">
+        </div>
 
-    {{-- Campo Estadio --}}
-    <div>
-      <label for="estadi_id" class="block font-bold">Estadi:</label>
-      <select name="estadi_id" id="estadi_id" class="border p-2 w-full rounded">
-        @foreach ($estadis as $estadi)
-          <option value="{{ $estadi->id }}" {{ old('estadi_id') == $estadi->id ? 'selected' : '' }}>
-            {{ $estadi->nom }}
-          </option>
-        @endforeach
-      </select>
-    </div>
+        <div class="mb-4">
+            <label for="estadi_id" class="block text-black font-bold mb-2">{{ __('Estadi') }}:</label>
+            <select name="estadi_id" id="estadi_id" 
+                    class="w-full border-gray-300 rounded-md shadow-sm text-black bg-white focus:border-black focus:ring-black appearance-none">
+                <option value="" class="text-gray-500">{{ __('Sense estadi') }}</option>
+                @foreach($estadis as $estadi)
+                    <option value="{{ $estadi->id }}" class="text-black">{{ $estadi->nom }}</option>
+                @endforeach
+            </select>
+        </div>
+        
+        <div class="mb-6">
+            <label for="escut" class="block text-black font-bold mb-2">{{ __('Escut') }} ({{ __('Imatge') }}):</label>
+            <input type="file" name="escut" id="escut" class="block w-full text-black bg-white border border-gray-300 rounded cursor-pointer">
+        </div>
 
-    {{-- Campo Títulos --}}
-    <div>
-      <label for="titols" class="block font-bold">Títols:</label>
-      <input type="number" name="titols" id="titols" value="{{ old('titols') }}" class="border p-2 w-full rounded">
-    </div>
-
-    {{-- ¡NUEVO! Campo Escudo --}}
-    <div>
-      <label for="escut" class="block font-bold">Escut (Imatge):</label>
-      <input type="file" name="escut" id="escut" class="border p-2 w-full rounded bg-white">
-    </div>
-
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">
-      Afegir
-    </button>
-  </form>
+        <div class="flex justify-end gap-4">
+            <a href="{{ route('equips.index') }}" class="text-black hover:underline py-2">{{ __('Cancel·lar') }}</a>
+            <button type="submit" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded shadow">
+                {{ __('Guardar') }}
+            </button>
+        </div>
+    </form>
+</div>
 @endsection

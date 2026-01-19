@@ -1,75 +1,54 @@
 @extends('layouts.equip')
-@section('title', 'Editar equip')
+@section('title', __('Editar'))
 
 @section('content')
-    <h1 class="text-2xl font-bold mb-4">Editar equip: {{ $equip->nom }}</h1>
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md" style="color: black !important;">
+    <h1 class="text-2xl font-bold text-black mb-6">{{ __('Editar') }}: {{ $equip->nom }}</h1>
 
-    @if ($errors->any())
-        <div class="bg-red-100 text-red-700 p-2 mb-4 rounded">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    {{-- ¡IMPORTANTE! enctype para subir archivos --}}
-    <form action="{{ route('equips.update', $equip) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+    <form action="{{ route('equips.update', $equip) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
-        {{-- Nombre --}}
-        <div>
-            <label for="nom" class="block font-bold">Nom:</label>
-            <input type="text" name="nom" id="nom" value="{{ old('nom', $equip->nom) }}" class="border p-2 w-full rounded">
+        <div class="mb-4">
+            <label for="nom" class="block text-black font-bold mb-2">{{ __('Nom') }}:</label>
+            <input type="text" name="nom" id="nom" value="{{ old('nom', $equip->nom) }}" required 
+                   class="w-full border-gray-300 rounded-md shadow-sm text-black bg-white focus:border-black focus:ring-black">
         </div>
 
-        {{-- Estadio --}}
-        <div>
-            <label for="estadi_id" class="block font-bold">Estadi:</label>
-            <select name="estadi_id" id="estadi_id" class="border p-2 w-full rounded">
-                @foreach ($estadis as $estadi)
-                    <option value="{{ $estadi->id }}" {{ old('estadi_id', $equip->estadi_id) == $estadi->id ? 'selected' : '' }}>
+        <div class="mb-4">
+            <label for="titols" class="block text-black font-bold mb-2">{{ __('Títols') }}:</label>
+            <input type="number" name="titols" id="titols" value="{{ old('titols', $equip->titols) }}" required 
+                   class="w-full border-gray-300 rounded-md shadow-sm text-black bg-white focus:border-black focus:ring-black">
+        </div>
+
+        <div class="mb-4">
+            <label for="estadi_id" class="block text-black font-bold mb-2">{{ __('Estadi') }}:</label>
+            <select name="estadi_id" id="estadi_id" 
+                    class="w-full border-gray-300 rounded-md shadow-sm text-black bg-white focus:border-black focus:ring-black appearance-none">
+                <option value="" class="text-gray-500">{{ __('Sense estadi') }}</option>
+                @foreach($estadis as $estadi)
+                    <option value="{{ $estadi->id }}" {{ $equip->estadi_id == $estadi->id ? 'selected' : '' }} class="text-black">
                         {{ $estadi->nom }}
                     </option>
                 @endforeach
             </select>
         </div>
 
-        {{-- Títulos --}}
-        <div>
-            <label for="titols" class="block font-bold">Títols:</label>
-            <input type="number" name="titols" id="titols" value="{{ old('titols', $equip->titols) }}"
-                class="border p-2 w-full rounded">
-        </div>
-
-        {{-- SECCIÓN ESCUDO --}}
-        <div class="border p-4 rounded bg-gray-50">
-            <label class="block font-bold mb-2">Escut:</label>
-
-            {{-- 1. Si ya tiene escudo, lo mostramos --}}
+        <div class="mb-6">
+            <label for="escut" class="block text-black font-bold mb-2">{{ __('Escut') }} ({{ __('Imatge') }}):</label>
+            <input type="file" name="escut" id="escut" class="block w-full text-black bg-white border border-gray-300 rounded cursor-pointer">
             @if($equip->escut)
-                <div class="mb-3 flex items-center gap-4">
-                    <img src="{{ asset('storage/' . $equip->escut) }}" alt="Escut actual"
-                        class="h-16 w-16 object-cover rounded-full border border-gray-300">
-                    <span class="text-sm text-gray-600">Escut actual</span>
-                </div>
+                <p class="mt-2 text-sm text-black">{{ __('Escut actual') }}:</p>
+                <img src="{{ asset('storage/' . $equip->escut) }}" class="h-16 w-16 mt-1 object-contain">
             @endif
-
-            {{-- 2. Input para subir uno nuevo --}}
-            <label class="block text-sm text-gray-600 mb-1">Pujar nou escut (opcional):</label>
-            <input type="file" name="escut" id="escut" class="border p-2 w-full rounded bg-white">
         </div>
 
-        <div class="flex gap-2">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">
-                Guardar Canvis
+        <div class="flex justify-end gap-4">
+            <a href="{{ route('equips.index') }}" class="text-black hover:underline py-2">{{ __('Cancel·lar') }}</a>
+            <button type="submit" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded shadow">
+                {{ __('Actualitzar') }}
             </button>
-
-            <a href="{{ route('equips.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded shadow">
-                Cancel·lar
-            </a>
         </div>
     </form>
+</div>
 @endsection

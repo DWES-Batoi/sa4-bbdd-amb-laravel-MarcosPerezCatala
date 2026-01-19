@@ -4,9 +4,9 @@ up:
 	docker compose up -d --build
 
 down:
+	docker compose down -v
 
 reset:
-	docker compose down -v
 	rm -rf vendor node_modules bootstrap/cache/*.php public/storage
 	rm -f .env
 

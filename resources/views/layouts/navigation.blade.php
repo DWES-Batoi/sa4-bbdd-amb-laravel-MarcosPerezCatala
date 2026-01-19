@@ -3,12 +3,11 @@
         <div class="flex justify-between h-16">
             <div class="flex">
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ url('/') }}">
+                    <a href="{{ auth()->check() ? route('dashboard') : url('/') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
 
-                {{-- MENÚ ESCRITORIO --}}
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('equips.index')" :active="request()->routeIs('equips.*')">
                         {{ __('Equips') }}
@@ -18,12 +17,10 @@
                         {{ __('Estadis') }}
                     </x-nav-link>
 
-                    {{-- NUEVO: Jugadoras --}}
                     <x-nav-link :href="route('jugadoras.index')" :active="request()->routeIs('jugadoras.*')">
                         {{ __('Jugadores') }}
                     </x-nav-link>
 
-                    {{-- NUEVO: Partits --}}
                     <x-nav-link :href="route('partits.index')" :active="request()->routeIs('partits.*')">
                         {{ __('Partits') }}
                     </x-nav-link>
@@ -36,7 +33,26 @@
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-4">
+                
+                {{-- 🌍 SELECTOR IDIOMA --}}
+                <div class="flex items-center gap-3 bg-gray-100 rounded-full px-3 py-1">
+                    <a href="{{ route('setLocale','ca') }}"
+                       class="text-xs font-bold {{ app()->getLocale()==='ca' ? 'text-blue-600 underline' : 'text-gray-500 hover:text-gray-800' }}">
+                        CA
+                    </a>
+                    <span class="text-gray-300">|</span>
+                    <a href="{{ route('setLocale','es') }}"
+                       class="text-xs font-bold {{ app()->getLocale()==='es' ? 'text-blue-600 underline' : 'text-gray-500 hover:text-gray-800' }}">
+                        ES
+                    </a>
+                    <span class="text-gray-300">|</span>
+                    <a href="{{ route('setLocale','en') }}"
+                       class="text-xs font-bold {{ app()->getLocale()==='en' ? 'text-blue-600 underline' : 'text-gray-500 hover:text-gray-800' }}">
+                        EN
+                    </a>
+                </div>
+
                 @auth
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
@@ -52,7 +68,7 @@
 
                         <x-slot name="content">
                             <x-dropdown-link :href="route('profile.edit')">
-                                {{ __('Perfil') }}
+                                {{ __('Profile') }}
                             </x-dropdown-link>
 
                             <form method="POST" action="{{ route('logout') }}">
@@ -60,15 +76,15 @@
                                 <x-dropdown-link :href="route('logout')"
                                         onclick="event.preventDefault();
                                                     this.closest('form').submit();">
-                                    {{ __('Tancar Sessió') }}
+                                    {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
                         </x-slot>
                     </x-dropdown>
                 @else
                     <div class="space-x-4">
-                        <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900">Log in</a>
-                        <a href="{{ route('register') }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900">Register</a>
+                        <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900">{{ __('Log in') }}</a>
+                        <a href="{{ route('register') }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900">{{ __('Register') }}</a>
                     </div>
                 @endauth
             </div>
@@ -84,23 +100,32 @@
         </div>
     </div>
 
-    {{-- MENÚ MÓVIL --}}
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('equips.index')" :active="request()->routeIs('equips.*')">
                 {{ __('Equips') }}
             </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('estadis.index')" :active="request()->routeIs('estadis.*')">
                 {{ __('Estadis') }}
             </x-responsive-nav-link>
-            
-            {{-- NUEVOS ENLACES MÓVIL --}}
+
             <x-responsive-nav-link :href="route('jugadoras.index')" :active="request()->routeIs('jugadoras.*')">
                 {{ __('Jugadores') }}
             </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('partits.index')" :active="request()->routeIs('partits.*')">
                 {{ __('Partits') }}
             </x-responsive-nav-link>
+        </div>
+
+        {{-- 🌍 IDIOMA MÒBIL --}}
+        <div class="pt-4 pb-4 border-t border-gray-200 dark:border-gray-600">
+            <div class="flex justify-around">
+                <a href="{{ route('setLocale','ca') }}" class="font-bold {{ app()->getLocale()==='ca' ? 'text-blue-600 underline' : 'text-gray-500' }}">Català</a>
+                <a href="{{ route('setLocale','es') }}" class="font-bold {{ app()->getLocale()==='es' ? 'text-blue-600 underline' : 'text-gray-500' }}">Castellano</a>
+                <a href="{{ route('setLocale','en') }}" class="font-bold {{ app()->getLocale()==='en' ? 'text-blue-600 underline' : 'text-gray-500' }}">English</a>
+            </div>
         </div>
 
         @auth
@@ -112,7 +137,7 @@
 
                 <div class="mt-3 space-y-1">
                     <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Perfil') }}
+                        {{ __('Profile') }}
                     </x-responsive-nav-link>
 
                     <form method="POST" action="{{ route('logout') }}">
@@ -120,16 +145,9 @@
                         <x-responsive-nav-link :href="route('logout')"
                                 onclick="event.preventDefault();
                                             this.closest('form').submit();">
-                            {{ __('Tancar Sessió') }}
+                            {{ __('Log Out') }}
                         </x-responsive-nav-link>
                     </form>
-                </div>
-            </div>
-        @else
-            <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-                <div class="mt-3 space-y-1 px-4">
-                    <x-responsive-nav-link :href="route('login')">Log in</x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('register')">Register</x-responsive-nav-link>
                 </div>
             </div>
         @endauth
