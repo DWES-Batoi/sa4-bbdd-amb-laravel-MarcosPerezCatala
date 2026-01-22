@@ -9,10 +9,12 @@ use Illuminate\Http\Request;
 
 class JugadoraController extends Controller
 {
-    public function __construct(private JugadoraService $servei) {}
+    public function __construct(private JugadoraService $servei)
+    {
+    }
 
     /**
-     * Llistar jugadores
+     * Llistar jugadoras
      */
     public function index()
     {
