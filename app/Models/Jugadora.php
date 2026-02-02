@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Jugadora extends Model
 {
-    // Opcional si no usas Factories, pero recomendable dejarlo por si acaso
     use HasFactory;
 
     /**
@@ -19,7 +18,7 @@ class Jugadora extends Model
      *
      * @var string[]
      */
-    protected $fillable = ['nom', 'dorsal', 'posicio', 'equip_id'];
+    protected $fillable = ['nom', 'dorsal', 'posicio', 'equip_id', 'edat'];
 
     /**
      * Relación: Una jugadora pertenece a un equipo.
