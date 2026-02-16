@@ -4,7 +4,6 @@ FROM php:8.3-fpm-alpine
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 
-# Paquetes de runtime + headers para extensiones
 RUN set -eux; \
     apk add --no-cache \
       git curl zip unzip bash shadow openssl \
@@ -12,16 +11,12 @@ RUN set -eux; \
       libpng-dev freetype-dev libjpeg-turbo-dev \
       libzip-dev linux-headers \
       nodejs npm; \
-    # Dependencias de compilación (phpize, autoconf, etc.)
     apk add --no-cache --virtual .build-deps $PHPIZE_DEPS; \
-    # Configurar e instalar extensiones nativas
     docker-php-ext-configure gd --with-freetype --with-jpeg; \
     docker-php-ext-install -j"$(nproc)" \
       pdo pdo_mysql mbstring exif pcntl bcmath intl gd zip; \
-    # PECL redis (requiere phpize/autoconf)
     pecl install redis; \
     docker-php-ext-enable redis; \
-    # Limpiar deps de build para reducir tamaño
     apk del .build-deps
 
 # Composer
