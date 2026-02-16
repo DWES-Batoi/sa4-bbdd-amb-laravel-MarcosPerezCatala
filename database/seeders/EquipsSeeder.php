@@ -12,27 +12,33 @@ class EquipsSeeder extends Seeder
 {
     public function run(): void
     {
-        $estadi = Estadi::where('nom', 'Camp Nou')->first();
-        if ($estadi) {
-            $estadi->equips()->updateOrCreate(
-                ['nom' => 'Barça Femení'],
-                ['titols' => 30]
-            );
-        }
+        $equips = [
+            'Barça Femení',
+            'Real Madrid Femení',
+            'Atlètic de Madrid',
+            'Levante UD',
+            'Madrid CFF',
+            'Sevilla FC',
+            'Real Sociedad',
+            'UDG Tenerife',
+            'Athletic Club',
+            'Valencia CF',
+            'Levante Las Planas',
+            'Real Betis',
+            'Villarreal CF',
+            'SD Eibar',
+            'Granada CF',
+            'Deportivo Abanca'
+        ];
 
-        $estadi = Estadi::where('nom', 'Wanda Metropolitano')->first();
-        if ($estadi) {
-            $estadi->equips()->updateOrCreate(
-                ['nom' => 'Atlètic de Madrid'],
-                ['titols' => 10]
-            );
-        }
+        $estadis = Estadi::all();
 
-        $estadi = Estadi::where('nom', 'Santiago Bernabéu')->first();
-        if ($estadi) {
+        foreach ($equips as $nomEquip) {
+            $estadi = $estadis->random();
+
             $estadi->equips()->updateOrCreate(
-                ['nom' => 'Real Madrid Femení'],
-                ['titols' => 5]
+                ['nom' => $nomEquip],
+                ['titols' => rand(0, 30)]
             );
         }
 
@@ -41,12 +47,12 @@ class EquipsSeeder extends Seeder
 
         foreach ($todosLosEquipos as $equip) {
             User::updateOrCreate(
-                ['email' => $equip->id . '@manager.com'], 
+                ['email' => $equip->id . '@manager.com'],
                 [
                     'name' => 'Manager ' . $equip->nom,
                     'password' => Hash::make('1234'),
-                    'role' => 'manager',     
-                    'equip_id' => $equip->id, 
+                    'role' => 'manager',
+                    'equip_id' => $equip->id,
                 ]
             );
         }

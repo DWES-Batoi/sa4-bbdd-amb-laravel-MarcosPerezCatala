@@ -16,32 +16,28 @@ class PartitSeeder extends Seeder
 
         // Si no hay equipos, no podemos crear partidos
         if ($equipIds->count() < 2) {
-            $this->command->info('No hi ha suficients equips per crear partits!');
+            $this->command->info('¡No hay suficientes equipos para crear partidos!');
             return;
         }
 
-        // 2. Creamos 20 partidos aleatorios
-        for ($i = 0; $i < 20; $i++) {
-            
-            // Elegimos un local al azar
+        for ($i = 0; $i < 100; $i++) {
             $localId = $equipIds->random();
 
-            // Elegimos un visitante al azar, PERO excluimos al local (para que no sea A vs A)
             $visitantId = $equipIds->reject(function ($id) use ($localId) {
                 return $id === $localId;
             })->random();
 
-            // Creamos el partido
             Partit::create([
-                'local_id'      => $localId,
-                'visitant_id'   => $visitantId,
-                'data_partit'   => Carbon::now()->subDays(rand(0, 60))->addHours(rand(10, 20)), // Fecha aleatoria últimos 2 meses
-                'gols_local'    => rand(0, 5), // Goles entre 0 y 5
+                'local_id' => $localId,
+                'visitant_id' => $visitantId,
+                'data_partit' => Carbon::now()->subDays(rand(0, 60))->addHours(rand(10, 20)), // Fecha aleatoria últimos 2 meses
+                'gols_local' => rand(0, 5),
                 'gols_visitant' => rand(0, 4),
+                'estadi_id' => Equip::find($localId)->estadi_id ?? 1,
             ]);
         }
 
-        $this->command->info('Creants 20 partits aleatoris correctamente!');
+        $this->command->info('¡Creados 100 partidos aleatorios correctamente!');
     }
-    
+
 }

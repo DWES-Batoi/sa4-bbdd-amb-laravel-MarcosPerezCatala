@@ -12,10 +12,7 @@ class SetLocale
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Llegim l'idioma de la sessió, si no existeix, agafem el de config
         $locale = Session::get('locale', config('app.locale'));
-        
-        // Apliquem l'idioma a l'aplicació
         App::setLocale($locale);
 
         return $next($request);

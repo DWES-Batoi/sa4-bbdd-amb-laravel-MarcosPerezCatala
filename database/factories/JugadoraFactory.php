@@ -26,11 +26,10 @@ class JugadoraFactory extends Factory
     public function definition(): array
     {
         return [
-            'nom'      => $this->faker->name('female'), // Genera nombres femeninos
+            'nom'      => $this->faker->name('female'),
             'dorsal'   => $this->faker->numberBetween(1, 99),
             'posicio'  => $this->faker->randomElement(['Portera', 'Defensa', 'Migcampista', 'Davantera']),
-            // Si no pasamos un equip_id, creará un equipo nuevo automáticamente
-            'equip_id' => Equip::factory(), 
+            'equip_id' => Equip::factory(),
         ];
     }
 }

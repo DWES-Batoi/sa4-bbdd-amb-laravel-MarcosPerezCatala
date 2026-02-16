@@ -17,6 +17,12 @@ class PartitService
 
     public function guardar(array $dades)
     {
+        if (!isset($dades['estadi_id']) && isset($dades['local_id'])) {
+            $local = \App\Models\Equip::find($dades['local_id']);
+            if ($local) {
+                $dades['estadi_id'] = $local->estadi_id;
+            }
+        }
         return $this->repository->create($dades);
     }
 

@@ -3,34 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\Estadi;
+use App\Http\Requests\StoreEstadiRequest;
+use App\Http\Requests\UpdateEstadiRequest;
 use Illuminate\Http\Request;
+
+use App\Services\LLMService;
 
 class EstadiController extends Controller
 {
-    // GET /estadis
     public function index()
     {
         $estadis = Estadi::all();
         return view('estadis.index', compact('estadis'));
     }
 
-    // GET /estadis/{estadi}
-   public function show(Estadi $estadi)
-{
-    $estadi->load('equips'); // opcional: carrega també els equips
-    return view('estadis.show', compact('estadi'));
-}
+    public function show(Estadi $estadi)
+    {
+        $estadi->load('equips');
 
-    // GET /estadis/create
+        $prompt = "Descriu l'estadi {$estadi->nom} de manera detallada, incloent la seva història i importància. La resposta ha de tenir unes 100 paraules.";
+
+        $descripcio = LLMService::getResponse($prompt);
+
+        return view('estadis.show', compact('estadi', 'descripcio'));
+    }
+
     public function create()
     {
         return view('estadis.create');
     }
 
-    // POST /estadis
-    public function store(Request $request)
+    public function store(StoreEstadiRequest $request)
     {
-        $estadi = new Estadi($request->all());
+        $estadi = new Estadi($request->validated());
         $estadi->save();
 
         return redirect()
@@ -38,15 +43,14 @@ class EstadiController extends Controller
             ->with('success', 'Estadi afegit correctament!');
     }
 
-    // GET /estadis/{estadi}/edit
     public function edit(Estadi $estadi)
     {
         return view('estadis.edit', compact('estadi'));
     }
 
-    public function update(Request $request, Estadi $estadi)
+    public function update(UpdateEstadiRequest $request, Estadi $estadi)
     {
-        $estadi->update($request->all());
+        $estadi->update($request->validated());
 
         return redirect()
             ->route('estadis.index')

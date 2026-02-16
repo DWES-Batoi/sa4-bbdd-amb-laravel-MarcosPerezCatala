@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Partit;
 use App\Models\Equip;
+use App\Events\PartitActualitzat;
+use App\Services\ClassificacioService;
 use App\Services\PartitService;
+use App\Http\Requests\StorePartitRequest;
+use App\Http\Requests\UpdatePartitRequest;
 use Illuminate\Http\Request;
 
 class PartitController extends Controller
 {
-    public function __construct(private PartitService $servei) {}
+    public function __construct(
+        private PartitService $servei,
+        private ClassificacioService $classificacioService
+    ) {
+    }
 
     public function index()
     {
@@ -23,17 +31,9 @@ class PartitController extends Controller
         return view('partits.create', compact('equips'));
     }
 
-    public function store(Request $request)
+    public function store(StorePartitRequest $request)
     {
-        $validated = $request->validate([
-            'local_id'      => 'required|exists:equips,id',
-            'visitant_id'   => 'required|exists:equips,id|different:local_id',
-            'data_partit'   => 'required|date',
-            'gols_local'    => 'integer|min:0',
-            'gols_visitant' => 'integer|min:0',
-        ]);
-
-        $this->servei->guardar($validated);
+        $this->servei->guardar($request->validated());
 
         return redirect()->route('partits.index')->with('success', 'Partit creat correctament!');
     }
@@ -49,17 +49,26 @@ class PartitController extends Controller
         return view('partits.edit', compact('partit', 'equips'));
     }
 
-    public function update(Request $request, Partit $partit)
+    public function update(UpdatePartitRequest $request, Partit $partit)
     {
-        $validated = $request->validate([
-            'local_id'      => 'required|exists:equips,id',
-            'visitant_id'   => 'required|exists:equips,id|different:local_id',
-            'data_partit'   => 'required|date',
-            'gols_local'    => 'required|integer|min:0',
-            'gols_visitant' => 'required|integer|min:0',
-        ]);
+        $abans = $this->classificacioService->posicionsPerEquip();
+        $this->servei->actualitzar($partit->id, $request->validated());
+        $despres = $this->classificacioService->posicionsPerEquip();
 
-        $this->servei->actualitzar($partit->id, $validated);
+        // Calcula canvis de posició
+        $delta = [];
+        foreach ($despres as $equipId => $statDespres) {
+            $posDespres = $statDespres['posicio'];
+            $posAbans = $abans[$equipId]['posicio'] ?? $posDespres;
+            $deltaPos = $posAbans - $posDespres;
+            if ($deltaPos !== 0) {
+                $delta[] = ['equip_id' => $equipId, 'delta' => $deltaPos];
+            }
+        }
+
+        if (!empty($delta)) {
+            event(new PartitActualitzat($delta));
+        }
 
         return redirect()->route('partits.index')->with('success', 'Resultat actualitzat!');
     }
@@ -67,7 +76,7 @@ class PartitController extends Controller
     public function destroy(Partit $partit)
     {
         $this->servei->eliminar($partit->id);
-        
+
         return redirect()->route('partits.index')->with('success', 'Partit eliminat del calendari.');
     }
 }

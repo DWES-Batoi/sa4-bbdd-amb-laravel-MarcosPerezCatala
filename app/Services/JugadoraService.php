@@ -6,11 +6,9 @@ use App\Repositories\BaseRepository;
 
 class JugadoraService
 {
-    /**
-     * Inyectamos el repositorio usando la interfaz BaseRepository.
-     * Gracias al ServiceProvider, Laravel le pasará el JugadoraRepository.
-     */
-    public function __construct(private BaseRepository $repo) {}
+    public function __construct(private BaseRepository $repo)
+    {
+    }
 
     public function llistar()
     {
@@ -24,7 +22,6 @@ class JugadoraService
 
     public function guardar(array $data)
     {
-        // Aquí podrías añadir lógica extra (ej: no permitir dorsales duplicados en el mismo equipo)
         return $this->repo->create($data);
     }
 
